@@ -14,6 +14,8 @@ public:
 	string img_url;
 	string dest_url;
 	string literal;
+
+	string filename;
 };
 
 #endif

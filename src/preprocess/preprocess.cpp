@@ -13,6 +13,22 @@ bool isnumber(string &s) {
 	return true;
 }
 
+string int2str(int x) {
+	stringstream ss;
+	string s;
+	ss << x;
+	ss >> s;
+	return s;
+}
+
+int str2int(string &s) {
+	stringstream ss;
+	int x;
+	ss << s;
+	ss >> x;
+	return x;
+}
+
 int load(string filename, vector<Data*> &dataset, bool istrain) {
 	ifstream fin;
 	fin.open(filename);
@@ -20,9 +36,11 @@ int load(string filename, vector<Data*> &dataset, bool istrain) {
 		cerr << "Loading '" << filename << "' failed!" << endl;
 		return -1;
 	}
+	ifstream fpic;
+	string str;
 	dataset.clear();
 	while (!fin.eof()) {
-		string str;
+		str = "";
 		fin >> str;
 		if (str == "") {
 			break;
@@ -55,13 +73,18 @@ int load(string filename, vector<Data*> &dataset, bool istrain) {
 			}
 			ad->literal = ad->literal + " " + str;
 		}
-
 		data->ad = ad;
 
+		ad->filename = "../../images/" + int2str(ad->creative_id) + ".jpg";
+		fpic.open(ad->filename);
+		if (!fpic) {
+			cerr << "'" << ad->filename << "'" << " does not exist!" << endl;
+			return -1;
+		}
+		fpic.close();
+
 		Feedback *feedback = new Feedback();
-		stringstream ss;
-		ss << str;
-		ss >> feedback->imp_time;
+		feedback->imp_time = str2int(str);
 		fin >> feedback->pos_id;
 		if (istrain) {
 			fin >> feedback->click_num;
