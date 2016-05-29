@@ -4,6 +4,17 @@
 vector<Data*> train;
 vector<Data*> test;
 
+int destroy(vector<Data*> &dataset) {
+	for (int i = 0; i < dataset.size(); ++i) {
+		delete dataset[i]->user;
+		delete dataset[i]->ad;
+		delete dataset[i]->feedback;
+		delete dataset[i];
+	}
+	dataset.clear();
+	return 0;
+}
+
 bool isnumber(string &s) {
 	for (int i = 0; i < s.length(); ++i) {
 		if ((s[i] < '0') || (s[i] > '9')) {
@@ -75,10 +86,11 @@ int load(string filename, vector<Data*> &dataset, bool istrain) {
 		}
 		data->ad = ad;
 
-		ad->filename = "../../images/" + int2str(ad->creative_id) + ".jpg";
-		fpic.open(ad->filename);
+		ad->dirname = "../../images/";
+		ad->filename = int2str(ad->creative_id) + ".jpg";
+		fpic.open(ad->dirname + ad->filename);
 		if (!fpic) {
-			cerr << "'" << ad->filename << "'" << " does not exist!" << endl;
+			cerr << "'" << ad->dirname + ad->filename << "'" << " does not exist!" << endl;
 			return -1;
 		}
 		fpic.close();
@@ -98,20 +110,74 @@ int load(string filename, vector<Data*> &dataset, bool istrain) {
 	return 0;
 }
 
-int destroy(vector<Data*> &dataset) {
+int save_image(string filename, vector<Data*> &dataset, bool istrain) {
+	ofstream fout;
+	fout.open(filename);
 	for (int i = 0; i < dataset.size(); ++i) {
-		delete dataset[i]->user;
-		delete dataset[i]->ad;
-		delete dataset[i]->feedback;
-		delete dataset[i];
+		Data *data = dataset[i];
+		User *user = data->user;
+		Ad *ad = data->ad;
+		Feedback *feedback = data->feedback;
+		fout << ad->filename << endl;
+		fout << user->gender << ' ' << user->year << ' ';
+		fout << ad->product_type << ' ';
+		if (istrain) {
+			fout << feedback->click_num;
+		}
+		fout << endl;
 	}
-	dataset.clear();
+	fout.close();
+	return 0;
+}
+
+int save_literal(string filename, vector<Data*> &dataset, bool istrain) {
+	ofstream fout;
+	fout.open(filename);
+	for (int i = 0; i < dataset.size(); ++i) {
+		Data *data = dataset[i];
+		User *user = data->user;
+		Ad *ad = data->ad;
+		Feedback *feedback = data->feedback;
+		fout << ad->literal << endl;
+		if (istrain) {
+			fout << feedback->click_num;
+		}
+		fout << endl;
+	}
+	fout.close();
+	return 0;
+}
+
+int save_information(string filename, vector<Data*> &dataset, bool istrain) {
+	ofstream fout;
+	fout.open(filename);
+	for (int i = 0; i < dataset.size(); ++i) {
+		Data *data = dataset[i];
+		User *user = data->user;
+		Ad *ad = data->ad;
+		Feedback *feedback = data->feedback;
+		fout << user->qq << ", " << user->gender << ", " << user->year << ", " << user->surf_scene << ", " << user->marriage_status << ", " << user->education << ", " << user->profession << ", ";
+		fout << ad->creative_id << ", " << ad->category_id << ", " << ad->series_id << ", " << ad->advertiser_id << ", " << ad->product_type << ", " << ad->product_id << ", ";
+		fout << feedback->imp_time << ", " << feedback->pos_id;
+		if (istrain) {
+			fout << ", " << feedback->click_num;
+		}
+		fout << endl;
+	}
+	fout.close();
 	return 0;
 }
 
 int main() {
 	load("../../data/train11w.data", train, true);
+	save_image("../image/train.txt", train, true);
+	save_literal("../literal/train.txt", train, true);
+	save_information("../information/train.csv", train, true);
 	load("../../data/test5w.data", test, false);
+	save_image("../image/test.txt", test, false);
+	save_literal("../literal/test.txt", test, false);
+	save_information("../information/test.csv", test, false);
 	destroy(train);
+	destroy(test);
 	return 0;
 }

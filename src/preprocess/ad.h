@@ -15,6 +15,7 @@ public:
 	string dest_url;
 	string literal;
 
+	string dirname;
 	string filename;
 };
 
