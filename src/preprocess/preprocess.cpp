@@ -42,7 +42,7 @@ int str2int(string &s) {
 
 int load(string filename, vector<Data*> &dataset, bool istrain) {
 	ifstream fin;
-	fin.open(filename);
+	fin.open(filename.data());
 	if (!fin) {
 		cerr << "Loading '" << filename << "' failed!" << endl;
 		return -1;
@@ -88,7 +88,7 @@ int load(string filename, vector<Data*> &dataset, bool istrain) {
 
 		ad->dirname = "../../images/";
 		ad->filename = int2str(ad->creative_id) + ".jpg";
-		fpic.open(ad->dirname + ad->filename);
+		fpic.open((ad->dirname + ad->filename).data());
 		if (!fpic) {
 			cerr << "'" << ad->dirname + ad->filename << "'" << " does not exist!" << endl;
 			return -1;
@@ -112,7 +112,7 @@ int load(string filename, vector<Data*> &dataset, bool istrain) {
 
 int save_image(string filename, vector<Data*> &dataset, bool istrain) {
 	ofstream fout;
-	fout.open(filename);
+	fout.open(filename.data());
 	for (int i = 0; i < dataset.size(); ++i) {
 		Data *data = dataset[i];
 		User *user = data->user;
@@ -132,7 +132,7 @@ int save_image(string filename, vector<Data*> &dataset, bool istrain) {
 
 int save_literal(string filename, vector<Data*> &dataset, bool istrain) {
 	ofstream fout;
-	fout.open(filename);
+	fout.open(filename.data());
 	for (int i = 0; i < dataset.size(); ++i) {
 		Data *data = dataset[i];
 		User *user = data->user;
@@ -150,7 +150,7 @@ int save_literal(string filename, vector<Data*> &dataset, bool istrain) {
 
 int save_information(string filename, vector<Data*> &dataset, bool istrain) {
 	ofstream fout;
-	fout.open(filename);
+	fout.open(filename.data());
 	for (int i = 0; i < dataset.size(); ++i) {
 		Data *data = dataset[i];
 		User *user = data->user;
