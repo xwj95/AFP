@@ -1,6 +1,9 @@
 #include "defines.h"
 #include "data.h"
 
+// Train size = 112248
+// Test size = 56355
+
 vector<Data*> train;
 vector<Data*> test;
 
