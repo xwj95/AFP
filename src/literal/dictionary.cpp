@@ -76,9 +76,9 @@ int save_dictionary(string filename, vector<string> &dictionary) {
 }
 
 int main() {
-	load_literal("literal.txt", literals);
+	load_literal("./txt/literal.txt", literals);
 	load_word("./sogou/SogouLabDic.txt", words);
 	select_word(literals, words, dictionary);
-	save_dictionary("dictionary.txt", dictionary);
+	save_dictionary("./txt/dictionary.txt", dictionary);
 	return 0;
 }

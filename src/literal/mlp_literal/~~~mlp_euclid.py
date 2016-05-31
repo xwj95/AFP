@@ -1,5 +1,6 @@
 import theano
 import theano.tensor as T
+import scipy.io as spio
 import numpy as np
 import time
 
@@ -44,16 +45,16 @@ def mlp_euclid(train_x, train_y, test_x, test_y, activation = 'relu', learning_r
 	X = T.fmatrix()
 	Y = T.fmatrix()
 
-	w1 = init_weights((198, 162))
-	b1 = init_bias(162)
-	w2 = init_weights((162, 96))
-	b2 = init_bias(96)
-	w3 = init_weights((96, 64))
-	b3 = init_bias(64)
-	w4 = init_weights((64, 36))
-	b4 = init_bias(36)
-	w5 = init_weights((36, 20))
-	b5 = init_bias(20)
+	w1 = init_weights((7060, 1500))
+	b1 = init_bias(1500)
+	w2 = init_weights((1500, 300))
+	b2 = init_bias(300)
+	w3 = init_weights((300, 60))
+	b3 = init_bias(60)
+	w4 = init_weights((60, 10))
+	b4 = init_bias(10)
+	w5 = init_weights((10, 2))
+	b5 = init_bias(2)
 
 	py_x = model(X, w1, b1, w2, b2, w3, b3, w4, b4, w5, b5, activation = activation)
 	y_pred = T.argmax(py_x, axis = 1)
@@ -66,18 +67,13 @@ def mlp_euclid(train_x, train_y, test_x, test_y, activation = 'relu', learning_r
 	predict = theano.function(inputs = [X], outputs = y_pred, allow_input_downcast = True)
 
 	now = time.strftime('%X', time.localtime())
-	print '[%s] Start training' %(now)
+	print '[%s] Start training' % (now)
 	for epoch in range(epochs):
 		for start, end in zip(range(0, train_x.shape[0], batch), range(batch, train_x.shape[0], batch)):
 			cost = train(train_x[start:end, :], train_y[start:end, :])
 		accuracy = float(np.sum(np.argmax(train_y, axis = 1) == predict(train_x))) / train_y.shape[0]
 		now = time.strftime('%X', time.localtime())
-		print '[%s] epoch %d, train accuracy = %.4f' %(now, epoch + 1, accuracy)
-		accuracy = float(np.sum(np.argmax(test_y, axis = 1) == predict(test_x))) / test_y.shape[0]
-		now = time.strftime('%X', time.localtime())
-		print '[%s] epoch %d, test accuracy = %.4f' %(now, epoch + 1, accuracy)
-		if accuracy > 0.44:
-			break;
+		print '[%s] epoch %d, train accuracy = %.4f' % (now, epoch + 1, accuracy)
 
 	list_w1 = w1.get_value(borrow = True)
 	list_b1 = b1.get_value(borrow = True)
@@ -91,3 +87,33 @@ def mlp_euclid(train_x, train_y, test_x, test_y, activation = 'relu', learning_r
 	list_b5 = b5.get_value(borrow = True)
 
 	return list_w1, list_b1, list_w2, list_b2, list_w3, list_b3, list_w4, list_b4, list_w5, list_b5
+
+def one_hot(x, n):
+	o_h = np.zeros((n, x.size))
+	o_h[x - 1, np.arange(x.size)] = 1
+	return o_h
+
+def load(onehot = True):
+	data = spio.loadmat('data_mlp.mat', struct_as_record = True)
+	train_x = data['trainX'].astype(float)
+	train_y = data['trainY'].astype(int)
+	test_x = data['testX'].astype(float)
+	test_y = data['testY'].astype(int)
+
+	if onehot:
+		train_y = one_hot(train_y, 2)
+		test_y = one_hot(test_y, 2)
+
+	train_x = train_x.T
+	train_y = train_y.T
+	test_x = test_x.T
+	test_y = test_y.T
+
+	return train_x, train_y, test_x, test_y
+
+def save(w1, b1, w2, b2, w3, b3, w4, b4, w5, b5):
+	spio.savemat('net.mat', {'w1': w1, 'b1': b1, 'w2': w2, 'b2': b2, 'w3': w3, 'b3': b3, 'w4': w4, 'b4': b4, 'w5': w5, 'b5': b5})
+
+train_x, train_y, test_x, test_y = load(onehot = True)
+list_w1, list_b1, list_w2, list_b2, list_w3, list_b3, list_w4, list_b4, list_w5, list_b5 = mlp_euclid(train_x, train_y, test_x, test_y)
+save(list_w1, list_b1, list_w2, list_b2, list_w3, list_b3, list_w4, list_b4, list_w5, list_b5)

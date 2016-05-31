@@ -88,15 +88,19 @@ int save_vector(string filename, vector<string> &literals, vector<string> &dicti
 			cout << "Now " << i << endl;
 		}
 		for (int j = 0; j < dictionary.size(); ++j) {
+			string s = literals[i];
 			int flag = 0;
-			if (literals[i].find(dictionary[j]) < literals[i].length()) {
-				flag = 1;
+			while (1) {
+				int pos = s.find(dictionary[j]);
+				if (pos >= s.length()) {
+					break;
+				}
+				flag += 1;
+				s = s.substr(pos + 1, s.length());
 			}
-			if (flag) {
-				fout << j << " ";
-			}
+			fout << flag << " ";
 		}
-		fout << -1 << endl;
+		fout << endl;
 	}
 	fout.close();
 	return 0;
@@ -115,9 +119,9 @@ int save_label(string filename, vector<int> &clicks) {
 int main() {
 	load("./txt/train.txt", train_literals, train_clicks, true);
 	load("./txt/test.txt", test_literals, test_clicks, false);
-	load_dictionary("./txt/dictionary.txt", dictionary);
-	save_vector("./txt/train_literal.txt", train_literals, dictionary);
-	save_vector("./txt/test_literal.txt", test_literals, dictionary);
+	load_dictionary("./txt/punctuation.txt", dictionary);
+	save_vector("./txt/train_punctuation.txt", train_literals, dictionary);
+	save_vector("./txt/test_punctuation.txt", test_literals, dictionary);
 	save_label("./txt/train_label.txt", train_clicks);
 	save_label("./txt/test_label.txt", test_clicks);
 	return 0;
