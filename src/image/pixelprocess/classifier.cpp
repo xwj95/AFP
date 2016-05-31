@@ -8,11 +8,11 @@ void Classifier::init()
 
 void Classifier::readinTrain()
 {
-	ifstream fin("train.txt");
+	ifstream fin("../txt/train.txt");
 	string str;
 	while(getline(fin, str))
 	{
-		str = "../../images/" + str;
+		str = "../../../images/" + str;
 		int i = trainCounter;
 		train[i].name = str;
 		fin >> train[i].gender >> train[i].year >> train[i].type >> train[i].num;
@@ -24,11 +24,11 @@ void Classifier::readinTrain()
 
 void Classifier::readinTest()
 {
-	ifstream fin("test.txt");
+	ifstream fin("../txt/test.txt");
 	string str;
 	while(getline(fin, str))
 	{
-		str = "../../images/" + str;
+		str = "../../../images/" + str;
 		int i = testCounter;
 		test[i].name = str;
 		fin >> test[i].gender >> test[i].year >> test[i].type;
