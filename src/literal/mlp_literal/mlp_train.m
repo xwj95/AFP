@@ -15,6 +15,6 @@ load('data.mat');
 % train_x = bsxfun(@minus, train_x, mean_value);
 % test_x = bsxfun(@minus, test_x, mean_value);
 
-epoch = 10;
+epoch = 20;
 model = Fit_mlp(model, train_x, train_y, test_x, test_y,...
 	100, epoch, 1, epoch, epoch);

@@ -1,7 +1,7 @@
 clear;
 load('data.mat');
-% load('net_iter_200.mat');
-load('net_iter_10.mat');
+load('net_iter_200.mat');
+% load('net_iter_10.mat');
 
 test_data = test_x;
 test_label = test_y;
